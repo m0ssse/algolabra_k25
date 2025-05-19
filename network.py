@@ -40,4 +40,10 @@ class Network:
 
         """
         activations = []
-
+        derivatives = []
+        for w, b, a in zip(self.weights, self.biases, self.activation_functions):
+            z = np.matmul(w, x)+b
+            activation, derivative = a(z)
+            activations.append(activation)
+            derivatives.append(derivative)
+            x = activation
