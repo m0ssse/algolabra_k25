@@ -1,5 +1,17 @@
 import numpy as np
 
+def sigmoid(x: np.ndarray) -> tuple:
+    """
+    The sigmoid activation function.
+
+    Args:
+        x: The points where the function is evaluated
+
+    Output:
+        A tuple containing the values of the function and its derivative at each points in the input array
+    """
+    val = 1./(np.exp(x)+1)
+    return val, np.multiply(val, 1-val) #The derivative of sigmoid is sigmoid*(1-sigmoid)
 
 class Network:
     def __init__(self, neuron_counts: list, activation_functions: list):
@@ -28,3 +40,4 @@ class Network:
 
         """
         activations = []
+
