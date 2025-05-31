@@ -20,7 +20,7 @@ class Network:
             if randomise_weights:
                 for i in range(1, len(neuron_counts)):
                     n, m = self.layer_size[i-1], self.layer_size[i]
-                    self.weights.append(np.random.rand(m, n))
+                    self.weights.append(20*np.random.rand(m, n)-10) #The rand function gives uniformly distributed random values in the range 0...1. We apply a linear transformation to widen this distribution
             else:
                 for i in range(1, len(neuron_counts)):
                     n, m = self.layer_size[i-1], self.layer_size[i]
@@ -32,7 +32,7 @@ class Network:
             if randomise_biases:
                 for i in range(1, len(neuron_counts)):
                     m = self.layer_size[i]
-                    self.biases.append(np.random.rand(m, 1))
+                    self.biases.append(20*np.random.rand(m, 1)-10)
             else:
                 for i in range(1, len(neuron_counts)):
                     m = self.layer_size[i]

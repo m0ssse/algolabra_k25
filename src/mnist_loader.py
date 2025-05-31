@@ -21,8 +21,8 @@ class MNISTLoader:
             data = array.array("B", file.read())
             images = []
             for i in range(size):
-                image = np.array(data[N*i:N*(i+1)])
-                images.append(image)
+                image = np.array(data[N*i:N*(i+1)])/256 #Each pixel of the array contains an integer in the range 0-255 so we rescale the pixel values to the range 0...1
+                images.append(np.reshape(image, (N, 1))) #We reshape the arrays to (N, 1) to make them behave nicely with matrix multiplication
             return images, size, rows, cols #We return the size of the datasize as well as the dimensions for testing purposes
         
     @classmethod
@@ -35,4 +35,4 @@ class MNISTLoader:
 if __name__=="__main__":
     #images_train = MNISTLoader.read_image_data("../data/train-images.idx3-ubyte")
     labels_train, _ = MNISTLoader.read_labels("../data/train-labels.idx1-ubyte")
-    print(labels_train[1])
+    print(labels_train[0])
