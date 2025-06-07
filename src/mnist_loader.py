@@ -1,7 +1,6 @@
 import struct
 import array
 import numpy as np
-from matplotlib import pyplot as plt
 
 class MNISTLoader:
     @classmethod

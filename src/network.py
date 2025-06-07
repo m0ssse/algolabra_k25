@@ -1,4 +1,5 @@
 import numpy as np
+from random import shuffle
 
 class Network:
     def __init__(self, neuron_counts: list, activation_functions: list, weights: list = None, biases: list = None, randomise_weights: bool = True, randomise_biases: bool = True):
@@ -81,6 +82,7 @@ class Network:
     @classmethod
     def identity(cls, x: np.ndarray) -> tuple:
         return x, np.ones(x.shape)
+    
 
 
 if __name__=="__main__":
