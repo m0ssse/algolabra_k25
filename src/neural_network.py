@@ -6,11 +6,18 @@ from pathlib import Path
 
 class Network:
     def __init__(self, size_in: int, size_hidden: int, size_out: int) -> None:
+        self.hidden_neurons = size_hidden
+
         self.w_hidden = np.random.randn(size_hidden, size_in)
         self.b_hidden = 0*np.random.randn(size_hidden, 1)
 
         self.w_out = np.random.randn(size_out, size_hidden)
         self.b_out = 0*np.random.randn(size_out, 1)
+
+        self.accuracy = 0
+
+    def __str__(self):
+        return f"{self.hidden_neurons} neurons in the hidden layer. Accuracy {(self.accuracy/10**4):.2f} %"
         
     def feed_forward(self, x: np.array):
         """
@@ -96,8 +103,8 @@ class Network:
         for i in range(epochs):
             shuffle(batches)
             self.epoch(batches, learn_rate)
-            accuracy = self.check_accuracy(test_images, test_labels)
-            print(f"epoch {i+1}: {accuracy} test images labeled correctly")
+            self.accuracy = self.check_accuracy(test_images, test_labels)
+            print(f"epoch {i+1}: {self.accuracy} test images labeled correctly")
             
     def check_accuracy(self, test_images: list, test_labels: list):
         res = 0
