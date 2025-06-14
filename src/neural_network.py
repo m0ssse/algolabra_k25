@@ -47,7 +47,7 @@ class Network:
 
         """
         a_hidden, a_out, da_hidden = self.feed_forward(x)
-        error_out = y-a_out
+        error_out = a_out-y
 
         dw_out = error_out@a_hidden.T
         db_out = error_out
@@ -57,7 +57,7 @@ class Network:
         dw_hidden = error_hidden@x.T
         db_hidden = error_hidden
 
-        return dw_hidden, db_hidden, dw_out, db_out
+        return dw_hidden, db_hidden, dw_out, db_out, error_out
     
     def batch_average(self, batch: list):
         """
@@ -65,7 +65,7 @@ class Network:
         """
         delta_w_hidden, delta_b_hidden, delta_w_out, delta_b_out = [np.zeros_like(arr) for arr in (self.w_hidden, self.b_hidden, self.w_out, self.b_out)]
         for x, label in batch:
-            dw_hidden, db_hidden, dw_out, db_out = self.backpropagation(x, label)
+            dw_hidden, db_hidden, dw_out, db_out, _ = self.backpropagation(x, label)
             delta_w_hidden+=dw_hidden
             delta_b_hidden+=db_hidden
             delta_w_out+=dw_out
@@ -124,9 +124,12 @@ class Network:
         """
         x = np.exp(x-np.max(x))
         return x/np.sum(x)
+    
 
 if __name__=="__main__":
-    network = Network(784, 32, 10)
+    print("jeejee")
+    network1 = Network(784, 32, 10)
+
     train_images, _, _, _ = mnist_loader.read_image_data(Path("data/train-images.idx3-ubyte"))
     train_labels, _ = mnist_loader.read_labels(Path("data/train-labels.idx1-ubyte"))
     test_images, _, _, _ = mnist_loader.read_image_data(Path("data/t10k-images.idx3-ubyte"))
@@ -136,6 +139,7 @@ if __name__=="__main__":
     batches = mnist_loader.make_batches(train_images, train_labels, batch_size)
 
     epochs = 10
-    learn_rate = 5
+    learn_rate = 3
 
-    network.train_network(epochs, batches, learn_rate, test_images, test_labels)
+    network1.train_network(epochs, batches, learn_rate, test_images, test_labels)
+

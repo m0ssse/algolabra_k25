@@ -1,31 +1,24 @@
 import numpy as np
-import network as nw
-import network_trainer as nwt
-import mnist_loader as loader
+import neural_network
+import mnist_loader
 from constants import epochs, batch_size, learn_rate
+from pathlib import Path
 
 def main():
-    images_train, train_size, rows, cols = loader.MNISTLoader.read_image_data("data/train-images.idx3-ubyte")
-    labels_train, _ = loader.MNISTLoader.read_labels("data/train-labels.idx1-ubyte")
-    images_test, test_size, _, _ = loader.MNISTLoader.read_image_data("data/t10k-images.idx3-ubyte")
-    labels_test, _ = loader.MNISTLoader.read_labels("data/t10k-labels.idx1-ubyte")
+    network = neural_network.Network(784, 32, 10)
 
-    network = nw.Network([rows*cols, 10, 10, 10], 
-                         [nw.Network.sigmoid, nw.Network.sigmoid, nw.Network.sigmoid, nw.Network.sigmoid]
-                         )
-    trainer = nwt.NetworkTrainer()
-    batches = trainer.make_batches(images_train, labels_train, batch_size)
-    for i in range(epochs):
-        print(f"epoch {i+1}")
-        total = trainer.epoch(network, batches, nwt.NetworkTrainer.quadratic, learn_rate, True)
-        correct_labels = 0
-        for test_im, test_label in zip(images_test, labels_test):
-            output, _ = network.feed_forward(test_im)
-            output_label = np.argmax(output[-1])
-            correct_labels+=test_label==output_label
-        print(f"average training loss {total[0, 0]/train_size}")
-        print(f"correctly labeled {correct_labels}/{test_size} test images")
-        print()
+    train_images, _, _, _ = mnist_loader.read_image_data(Path("data/train-images.idx3-ubyte"))
+    train_labels, _ = mnist_loader.read_labels(Path("data/train-labels.idx1-ubyte"))
+    test_images, _, _, _ = mnist_loader.read_image_data(Path("data/t10k-images.idx3-ubyte"))
+    test_labels, _ = mnist_loader.read_labels(Path("data/t10k-labels.idx1-ubyte"))
+
+    batch_size = 32
+    batches = mnist_loader.make_batches(train_images, train_labels, batch_size)
+
+    epochs = 10
+    learn_rate = 3
+
+    network.train_network(epochs, batches, learn_rate, test_images, test_labels)
 
 if __name__=="__main__":
     main()
