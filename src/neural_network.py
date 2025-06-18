@@ -99,12 +99,13 @@ class Network:
             gradients = self.batch_average(batch)
             self.update(*gradients, learn_rate)
 
-    def train_network(self, epochs: int, batches: list, learn_rate: float, test_images: list, test_labels: list):
+    def train_network(self, epochs: int, batches: list, learn_rate: float, test_images: list, test_labels: list, show_progress: bool = False):
         for i in range(epochs):
             shuffle(batches)
             self.epoch(batches, learn_rate)
             self.accuracy = self.check_accuracy(test_images, test_labels)
-            print(f"epoch {i+1}: {self.accuracy} test images labeled correctly")
+            if show_progress:
+                print(f"epoch {i+1}: {self.accuracy} test images labeled correctly")
             
     def check_accuracy(self, test_images: list, test_labels: list):
         res = 0
@@ -113,7 +114,6 @@ class Network:
             res+=prediction==true_label
         return res
         
-    
     @classmethod
     def sigmoid(cls, x: np.array) -> tuple:
         """
@@ -132,6 +132,22 @@ class Network:
         x = np.exp(x-np.max(x))
         return x/np.sum(x)
     
+    @classmethod
+    def crossentropy(cls, x: np.array, y: np.array) -> float:
+        """
+        Calcualtes the value of the cross-entropy loss function. For the definition, see e.g. https://en.wikipedia.org/wiki/Cross-entropy
+        
+        While this function is not used during training per se, it is still useful to implement in order to verify that the training loss of the network does in fact decrease over time
+
+        inputs:
+            x: The output of the network
+            y: The one-hot encoded label
+        outputs:
+            The value of categorical cross-entropy
+        """
+        return -np.log(x[np.where(y)]) #Since y is one-hot encoded, we can use np.where to pick the only relevant nonzero element in the sum
+    
+    
 
 if __name__=="__main__":
     print("jeejee")
@@ -148,5 +164,6 @@ if __name__=="__main__":
     epochs = 10
     learn_rate = 3
 
-    network1.train_network(epochs, batches, learn_rate, test_images, test_labels)
+    network1.train_network(epochs, batches, learn_rate, test_images, test_labels, True)
+    print(Network.crossentropy(network1.feed_forward(train_images[0])[1], train_labels[0]))
 
