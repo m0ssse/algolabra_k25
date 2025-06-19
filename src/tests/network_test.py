@@ -39,3 +39,10 @@ class TestNetwork(unittest.TestCase):
         for _ in range(tests):
             offset = 10*np.random.randn()
             np.testing.assert_almost_equal(nw.Network.softmax(x-offset), ref_value) 
+
+    def training_loss_decreases(self):
+        network = nw.Network(784, 32, 10)
+        data_train = sample(list(zip(images_train, labels_train)), 100)
+        batch = [data_train]
+
+        
