@@ -22,12 +22,13 @@ class DataLoaderTest(unittest.TestCase):
         _, label_N = loader.read_labels(Path("data/train-labels.idx1-ubyte"))
         self.assertEqual(image_N, label_N)
 
-    def labels_have_exactly_one_nonzero_element(self):
+    def test_labels_have_exactly_one_nonzero_element(self):
         labels, _ = loader.read_labels(Path("data/train-labels.idx1-ubyte"))
         for l in labels:
             self.assertEqual(np.count_nonzero(l), 1)
 
-    def lables_have_correct_shape(self):
+    def test_labels_have_correct_shape(self):
+        
         labels, _ = loader.read_labels(Path("data/train-labels.idx1-ubyte"))
         for l in labels:
             self.assertEqual(l.shape, (10, 1))

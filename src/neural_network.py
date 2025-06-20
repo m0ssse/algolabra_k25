@@ -54,6 +54,7 @@ class Network:
 
         """
         a_hidden, a_out, da_hidden = self.feed_forward(x)
+        cost = Network.crossentropy(a_out, y)
         error_out = a_out-y
 
         dw_out = error_out@a_hidden.T
@@ -64,20 +65,22 @@ class Network:
         dw_hidden = error_hidden@x.T
         db_hidden = error_hidden
 
-        return dw_hidden, db_hidden, dw_out, db_out, error_out
+        return dw_hidden, db_hidden, dw_out, db_out, error_out, cost
     
     def batch_average(self, batch: list):
         """
         Calculates the average of the gradients of the cost function wrt the parameters of the network over a single batch of training data
         """
         delta_w_hidden, delta_b_hidden, delta_w_out, delta_b_out = [np.zeros_like(arr) for arr in (self.w_hidden, self.b_hidden, self.w_out, self.b_out)]
+        total_cost = 0
         for x, label in batch:
-            dw_hidden, db_hidden, dw_out, db_out, _ = self.backpropagation(x, label)
+            dw_hidden, db_hidden, dw_out, db_out, _, cost = self.backpropagation(x, label)
             delta_w_hidden+=dw_hidden
             delta_b_hidden+=db_hidden
             delta_w_out+=dw_out
             delta_b_out+=db_out
-        return delta_w_hidden/len(batch), delta_b_hidden/len(batch), delta_w_out/len(batch), delta_b_out/len(batch)
+            total_cost+=cost
+        return delta_w_hidden/len(batch), delta_b_hidden/len(batch), delta_w_out/len(batch), delta_b_out/len(batch), cost
     
     def update(self, delta_w_hidden: np.array, delta_b_hidden: np.array, delta_w_out: np.array, delta_b_out: np.array, learn_rate: float) -> None:
         """
@@ -91,21 +94,25 @@ class Network:
         self.w_out-=learn_rate*delta_w_out
         self.b_out-=learn_rate*delta_b_out
 
-    def epoch(self, batches: list, learn_rate: float) -> None:
+    def epoch(self, batches: list, learn_rate: float, update: bool = True) -> None:
         """
         Performs a single epoch: i.e. processes all the batches once and updates the parameters of the network after each batch
         """
+        total_cost = 0
         for batch in batches:
-            gradients = self.batch_average(batch)
-            self.update(*gradients, learn_rate)
+            *gradients, cost = self.batch_average(batch)
+            total_cost+=cost[0] #Cost is a 1x1 array since the network operates on 2d-arrays so we extract the only element
+            if update:
+                self.update(*gradients, learn_rate)
+        return total_cost
 
     def train_network(self, epochs: int, batches: list, learn_rate: float, test_images: list, test_labels: list, show_progress: bool = False):
         for i in range(epochs):
             shuffle(batches)
-            self.epoch(batches, learn_rate)
+            training_loss = self.epoch(batches, learn_rate)
             self.accuracy = self.check_accuracy(test_images, test_labels)
             if show_progress:
-                print(f"epoch {i+1}: {self.accuracy} test images labeled correctly")
+                print(f"epoch {i+1}: {self.accuracy} test images labeled correctly. Training loss: {training_loss}")
             
     def check_accuracy(self, test_images: list, test_labels: list):
         res = 0
@@ -165,5 +172,5 @@ if __name__=="__main__":
     learn_rate = 3
 
     network1.train_network(epochs, batches, learn_rate, test_images, test_labels, True)
-    print(Network.crossentropy(network1.feed_forward(train_images[0])[1], train_labels[0]))
+    #print(Network.crossentropy(network1.feed_forward(train_images[0])[1], train_labels[0]))
 
