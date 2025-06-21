@@ -86,6 +86,3 @@ class TestNetwork(unittest.TestCase):
             np.logical_not(np.isclose(delta_b_out, np.ones(delta_b_out.shape))).all()
             self.assertTrue(res)
             network.update(delta_w_hidden, delta_b_hidden, delta_w_out, delta_b_out, learn_rate)
-
-        
-        
