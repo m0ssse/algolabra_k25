@@ -5,6 +5,7 @@ from pathlib import Path
 
 def help():
     print("Commands: ")
+    print("h: Help")
     print("a: Create a new network")
     print("t: Train a network")
     print("s: Show networks")
@@ -34,10 +35,12 @@ def main():
         if command=="t":
             ind = int(input("Choose a network to train "))
             if ind<1 or ind>len(networks):
+                print("")
                 continue
-            epochs = int(input("Choose the number of epochs "))
-            learn_rate = float(input("Choose the learn rate "))
-            networks[ind-1].train_network(epochs, batches, learn_rate, test_images, test_labels)
+            epochs = int(input("Choose the number of epochs (suitable values should be around 10): "))
+            learn_rate = float(input("Choose the learn rate (suitable values should be around 3): "))
+            show_progress = bool(int(input("Would you like to display training progress? (1: show progress, 0: don't show progress) ")))
+            networks[ind-1].train_network(epochs, batches, learn_rate, test_images, test_labels, show_progress)
 
 
 
