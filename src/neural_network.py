@@ -6,8 +6,15 @@ from pathlib import Path
 
 class Network:
     def __init__(self, size_in: int, size_hidden: int, size_out: int) -> None:
+        """Initializes the network containing an input layer, one hidden layer and an output layer. The weights and biases are randomised.
+
+        input:
+            The sizes of the layers.
+        """
+        
         self.hidden_neurons = size_hidden
 
+        
         self.w_hidden = np.random.randn(size_hidden, size_in)
         self.b_hidden = 0*np.random.randn(size_hidden, 1)
 
@@ -94,9 +101,18 @@ class Network:
         self.w_out-=learn_rate*delta_w_out
         self.b_out-=learn_rate*delta_b_out
 
-    def epoch(self, batches: list, learn_rate: float, update: bool = True) -> None:
+    def epoch(self, batches: list, learn_rate: float, update: bool = True) -> np.array:
         """
         Performs a single epoch: i.e. processes all the batches once and updates the parameters of the network after each batch
+
+        inputs:
+            batches: A list of batches used for training
+            learn_rate: The learn rate used in gradient descent.
+            update: A flag that determines whether the computed gradients are used to update the parameters of the network
+
+        outputs:
+            The sum of the values of the loss functions over the training data set
+            
         """
         total_cost = 0
         for batch in batches:
@@ -106,15 +122,37 @@ class Network:
                 self.update(*gradients, learn_rate)
         return total_cost
 
-    def train_network(self, epochs: int, batches: list, learn_rate: float, test_images: list, test_labels: list, show_progress: bool = False):
+    def train_network(self, epochs: int, batches: list, learn_rate: float, test_images: list, test_labels: list, show_progress: bool = False) -> None:
+        """
+        This method is used to train the network by performing a specified number of epochs. 
+
+        inputs:
+            epochs: The number of epochs to perform
+            batches: List of training data batches
+            learn_rate: The learn rate used in gradient descent
+            test_images: The images in the test data set, used to determine the accuracy of the network
+            test_labels: The corresponding labels
+            show_progress: A flag to determine whether to print how the training is progressing after each epoch
+        """
+        
         for i in range(epochs):
-            shuffle(batches)
+            shuffle(batches) #The batches are shuffled to reduce the risk of overfitting
             training_loss = self.epoch(batches, learn_rate)
             self.accuracy = self.check_accuracy(test_images, test_labels)
             if show_progress:
                 print(f"epoch {i+1}: {self.accuracy} test images labeled correctly. Training loss: {training_loss}")
             
     def check_accuracy(self, test_images: list, test_labels: list):
+        """
+        This method checks the accuracy of the network by having the network classify each image in a given data set and counting how many are correctly labelled
+
+        inputs:
+            test_images: A list of image arrays to be classified
+            test_labels: The true labels for each image
+
+        outputs:
+            The number of correctly classified images
+        """
         res = 0
         for x, label in zip(test_images, test_labels):
             prediction, true_label = np.argmax(self.feed_forward(x)[1]), np.argmax(label)
@@ -157,7 +195,6 @@ class Network:
     
 
 if __name__=="__main__":
-    print("jeejee")
     network1 = Network(784, 32, 10)
 
     train_images, _, _, _ = mnist_loader.read_image_data(Path("data/train-images.idx3-ubyte"))
@@ -172,5 +209,4 @@ if __name__=="__main__":
     learn_rate = 3
 
     network1.train_network(epochs, batches, learn_rate, test_images, test_labels, True)
-    #print(Network.crossentropy(network1.feed_forward(train_images[0])[1], train_labels[0]))
 
