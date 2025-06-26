@@ -4,7 +4,7 @@ import mnist_loader
 from pathlib import Path
 
 """
-To run the application, navigate to the repository root and use python src/main.py to run the application.
+To run the application, navigate to the repository root and type 'python src/main.py' to run the application.
 This ensures that the MNIST data is loaded correctly
 """
 
