@@ -3,6 +3,11 @@ import neural_network
 import mnist_loader
 from pathlib import Path
 
+"""
+To run the application, navigate to the repository root and use python src/main.py to run the application.
+This ensures that the MNIST data is loaded correctly
+"""
+
 class NeuralNetworkApplication:
     def __init__(self):
         self.train_images, _, _, _ = mnist_loader.read_image_data(Path("data/train-images.idx3-ubyte"))
