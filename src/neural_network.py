@@ -24,7 +24,7 @@ class Network:
         self.accuracy = 0
 
     def __str__(self):
-        return f"{self.hidden_neurons} neurons in the hidden layer. Accuracy {(self.accuracy/10**4):.2f} %"
+        return f"{self.hidden_neurons} neurons in the hidden layer. Accuracy {(100*self.accuracy):.2f} %"
         
     def feed_forward(self, x: np.array):
         """
@@ -138,9 +138,10 @@ class Network:
         for i in range(epochs):
             shuffle(batches) #The batches are shuffled to reduce the risk of overfitting
             training_loss = self.epoch(batches, learn_rate)
-            self.accuracy = self.check_accuracy(test_images, test_labels)
+            correct_labels = self.check_accuracy(test_images, test_labels)
+            self.accuracy = correct_labels/len(test_images)
             if show_progress:
-                print(f"epoch {i+1}: {self.accuracy} test images labeled correctly. Training loss: {training_loss}")
+                print(f"epoch {i+1}: {correct_labels}/{len(test_images)} test images labeled correctly. Training loss: {training_loss}")
             
     def check_accuracy(self, test_images: list, test_labels: list):
         """

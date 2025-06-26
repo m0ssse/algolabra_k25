@@ -1,11 +1,10 @@
-import numpy as np
+#import numpy as np
 import neural_network
 import mnist_loader
 from pathlib import Path
 
 def help():
     print("Commands: ")
-    print("h: Help")
     print("a: Create a new network")
     print("t: Train a network")
     print("s: Show networks")
@@ -33,14 +32,39 @@ def main():
             for i, network in enumerate(networks):
                 print(f"{i+1}: {network}")
         if command=="t":
-            ind = int(input("Choose a network to train "))
+            if not networks:
+                print("No networks to train!")
+                continue
+            print(f"There are {len(networks)} networks available to train.")
+            ind = int(input(f"Choose a network to train: "))
             if ind<1 or ind>len(networks):
                 print("")
                 continue
-            epochs = int(input("Choose the number of epochs (suitable values should be around 10): "))
-            learn_rate = float(input("Choose the learn rate (suitable values should be around 3): "))
+            epochs=-1
+            learn_rate = -1
+            while epochs<0:
+                try:
+                    epochs = int(input("Choose the number of epochs (suitable values should be around 10) or type 0 to cancel: "))
+                    if epochs<0:
+                        raise ValueError
+                except ValueError:
+                    print("The number of epochs must be a positive integer")
+            if epochs==0:
+                continue
+
+            while learn_rate<0:
+                try:
+                    learn_rate = float(input("Choose the learn rate (suitable values should be around 3) or type 0 to cancel: "))
+                    if learn_rate<0:
+                        raise ValueError
+                except ValueError:
+                    print("The learn rate must be a positive number!")
+            if learn_rate==0:
+                continue
             show_progress = bool(int(input("Would you like to display training progress? (1: show progress, 0: don't show progress) ")))
             networks[ind-1].train_network(epochs, batches, learn_rate, test_images, test_labels, show_progress)
+            print("Training finished!")
+            print()
 
 
 
