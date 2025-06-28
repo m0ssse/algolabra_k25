@@ -61,9 +61,3 @@ def make_batches(images: list, labels: list, batch_size: int) -> list:
         batch_images, batch_labels = images[i*batch_size:(i+1)*batch_size], labels[i*batch_size:(i+1)*batch_size]
         batches.append(list(zip(batch_images, batch_labels)))
     return batches
-
-if __name__=="__main__":
-    images_train, _, _, _ = read_image_data(Path("../data/train-images.idx3-ubyte"))
-    labels_train, _ = read_labels(Path("../data/train-labels.idx1-ubyte"))
-
-    batches = make_batches(images_train, labels_train, 32)

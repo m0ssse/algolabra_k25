@@ -32,3 +32,17 @@ class DataLoaderTest(unittest.TestCase):
         labels, _ = loader.read_labels(Path("data/train-labels.idx1-ubyte"))
         for l in labels:
             self.assertEqual(l.shape, (10, 1))
+
+    def test_batching(self):
+        images, N, _, _ = loader.read_image_data(Path("data/train-images.idx3-ubyte"))
+        labels, _ = loader.read_labels(Path("data/train-labels.idx1-ubyte"))
+        for batch_size in (8, 16, 32, 64, 128):
+            batches = loader.make_batches(images, labels, batch_size)
+            total = 0
+            for i in range(len(batches)-1): #All but the last batch should have batch_size items and the total number of items across all batches should equal the number of training items
+                batch = batches[i]
+                self.assertEqual(len(batch), batch_size)
+                total+=len(batch)
+            total+=len(batches[-1])
+            self.assertLessEqual(len(batches[-1]), batch_size)
+            self.assertEqual(total, N)
