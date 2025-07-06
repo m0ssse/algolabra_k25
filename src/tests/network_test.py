@@ -11,6 +11,8 @@ class TestNetwork(unittest.TestCase):
     def setUp(self):
         self.images_train, _, _, _ = loader.read_image_data(Path("data/train-images.idx3-ubyte"))
         self.labels_train, _ = loader.read_labels(Path("data/train-labels.idx1-ubyte"))
+        self.images_test, _, _, _ = loader.read_image_data(Path("data/t10k-images.idx3-ubyte"))
+        self.labels_test, _ = loader.read_labels(Path("data/t10k-labels.idx1-ubyte"))
 
     def test_sigmoid(self):
         val0, deriv0 = nw.Network.sigmoid(0)
@@ -64,6 +66,22 @@ class TestNetwork(unittest.TestCase):
         for _ in range(epochs):
             training_losses.append(network.epoch(batch, learn_rate))
         self.assertGreater(training_losses[0], training_losses[-1])
+    
+    def test_training_loss_decreases2(self):
+        """
+        Test training using the train_network method as sopposed to running epochs directly in the test
+        """
+        network = nw.Network(784, 128, 10)
+        data_train = sample(list(zip(self.images_train, self.labels_train)), 128)
+        batch = [data_train]
+        learn_rate = 3
+        epochs = 10
+        training_losses = network.train_network(epochs, batch, learn_rate, self.images_test, self.labels_test, False)
+        self.assertGreater(training_losses[0], training_losses[-1])
+
+    def test_str_method(self):
+        network = nw.Network(784, 128, 10)
+        self.assertEqual(str(network), f"{128} neurons in the hidden layer. Accuracy {0:.2f} %")
 
     def test_parameters_change(self):
         """
@@ -86,3 +104,14 @@ class TestNetwork(unittest.TestCase):
             np.logical_not(np.isclose(delta_b_out, np.ones(delta_b_out.shape))).all()
             self.assertTrue(res)
             network.update(delta_w_hidden, delta_b_hidden, delta_w_out, delta_b_out, learn_rate)
+
+    def test_performance(self):
+        """
+        Test that the network performs reasonably well after enough training
+        """
+        network = nw.Network(784, 32, 10)
+        batches = loader.make_batches(self.images_train, self.labels_train, 32)
+        epochs = 10
+        learn_rate = 3
+        network.train_network(epochs, batches, learn_rate, self.images_test, self.labels_test)
+        self.assertGreaterEqual(network.accuracy, 0.95)

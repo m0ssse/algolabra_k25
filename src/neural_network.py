@@ -122,7 +122,7 @@ class Network:
                 self.update(*gradients, learn_rate)
         return total_cost
 
-    def train_network(self, epochs: int, batches: list, learn_rate: float, test_images: list, test_labels: list, show_progress: bool = False) -> None:
+    def train_network(self, epochs: int, batches: list, learn_rate: float, test_images: list, test_labels: list, show_progress: bool = False) -> list:
         """
         This method is used to train the network by performing a specified number of epochs. 
 
@@ -133,16 +133,20 @@ class Network:
             test_images: The images in the test data set, used to determine the accuracy of the network
             test_labels: The corresponding labels
             show_progress: A flag to determine whether to print how the training is progressing after each epoch
+        output:
+            a list of total training losses for each epoch
         """
-        
+        training_losses = []
         for i in range(epochs):
             shuffle(batches) #The batches are shuffled to reduce the risk of overfitting
             training_loss = self.epoch(batches, learn_rate)
+            training_losses.append(training_loss)
             correct_labels = self.check_accuracy(test_images, test_labels)
             self.accuracy = correct_labels/len(test_images)
             if show_progress:
                 print(f"epoch {i+1}: {correct_labels}/{len(test_images)} test images labeled correctly. Training loss: {training_loss}")
-            
+        return training_losses   
+
     def check_accuracy(self, test_images: list, test_labels: list):
         """
         This method checks the accuracy of the network by having the network classify each image in a given data set and counting how many are correctly labelled
