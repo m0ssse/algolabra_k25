@@ -1,7 +1,6 @@
-import numpy as np
-import mnist_loader
 from random import shuffle
-from pathlib import Path
+import numpy as np
+
 
 
 class Network:
@@ -11,21 +10,17 @@ class Network:
         input:
             The sizes of the layers.
         """
-        
-        self.hidden_neurons = size_hidden
 
-        
+        self.hidden_neurons = size_hidden
         self.w_hidden = np.random.randn(size_hidden, size_in)
         self.b_hidden = 0*np.random.randn(size_hidden, 1)
-
         self.w_out = np.random.randn(size_out, size_hidden)
         self.b_out = 0*np.random.randn(size_out, 1)
-
         self.accuracy = 0
 
     def __str__(self):
         return f"{self.hidden_neurons} neurons in the hidden layer. Accuracy {(100*self.accuracy):.2f} %"
-        
+    
     def feed_forward(self, x: np.array):
         """
         Compute the output of the network for the given vector x
@@ -44,7 +39,7 @@ class Network:
         a_out = Network.softmax(z_out)
 
         return a_hidden, a_out, da_hidden
-    
+
     def backpropagation(self, x: np.array, y: np.array):
         """
         Calculates the gradients with respect to weights and biases. These error function used is categorical cross-entropy. More
@@ -73,7 +68,7 @@ class Network:
         db_hidden = error_hidden
 
         return dw_hidden, db_hidden, dw_out, db_out, error_out, cost
-    
+
     def batch_average(self, batch: list):
         """
         Calculates the average of the gradients of the cost function wrt the parameters of the network over a single batch of training data
@@ -88,7 +83,7 @@ class Network:
             delta_b_out+=db_out
             total_cost+=cost
         return delta_w_hidden/len(batch), delta_b_hidden/len(batch), delta_w_out/len(batch), delta_b_out/len(batch), cost
-    
+
     def update(self, delta_w_hidden: np.array, delta_b_hidden: np.array, delta_w_out: np.array, delta_b_out: np.array, learn_rate: float) -> None:
         """
         Updates the parameters of the network
@@ -145,7 +140,7 @@ class Network:
             self.accuracy = correct_labels/len(test_images)
             if show_progress:
                 print(f"epoch {i+1}: {correct_labels}/{len(test_images)} test images labeled correctly. Training loss: {training_loss}")
-        return training_losses   
+        return training_losses
 
     def check_accuracy(self, test_images: list, test_labels: list):
         """
@@ -163,7 +158,7 @@ class Network:
             prediction, true_label = np.argmax(self.feed_forward(x)[1]), np.argmax(label)
             res+=prediction==true_label
         return res
-        
+
     @classmethod
     def sigmoid(cls, x: np.array) -> tuple:
         """
@@ -171,7 +166,7 @@ class Network:
         """
         x = 1/(1+np.exp(-x))
         return x, x*(1-x)
-    
+
     @classmethod
     def softmax(cls, x: np.array) -> np.array:
         """
@@ -181,7 +176,7 @@ class Network:
         """
         x = np.exp(x-np.max(x))
         return x/np.sum(x)
-    
+
     @classmethod
     def crossentropy(cls, x: np.array, y: np.array) -> float:
         """
@@ -197,21 +192,3 @@ class Network:
         """
         return -np.log(x[np.where(y)]) #Since y is one-hot encoded, we can use np.where to pick the only relevant nonzero element in the sum
     
-    
-
-if __name__=="__main__":
-    network1 = Network(784, 32, 10)
-
-    train_images, _, _, _ = mnist_loader.read_image_data(Path("data/train-images.idx3-ubyte"))
-    train_labels, _ = mnist_loader.read_labels(Path("data/train-labels.idx1-ubyte"))
-    test_images, _, _, _ = mnist_loader.read_image_data(Path("data/t10k-images.idx3-ubyte"))
-    test_labels, _ = mnist_loader.read_labels(Path("data/t10k-labels.idx1-ubyte"))
-
-    batch_size = 32
-    batches = mnist_loader.make_batches(train_images, train_labels, batch_size)
-
-    epochs = 10
-    learn_rate = 3
-
-    network1.train_network(epochs, batches, learn_rate, test_images, test_labels, True)
-

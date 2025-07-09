@@ -1,7 +1,7 @@
 #import numpy as np
+from pathlib import Path
 import neural_network
 import mnist_loader
-from pathlib import Path
 
 """
 To run the application, navigate to the repository root and type 'python src/main.py' to run the application.
@@ -30,7 +30,7 @@ class NeuralNetworkApplication:
     def show_networks(self):
         for i, network in enumerate(self.networks):
             print(f"{i+1}: {network}")
-    
+
     def add_network(self):
         hidden_neurons = -1
         while hidden_neurons<0:
@@ -52,7 +52,7 @@ class NeuralNetworkApplication:
         ind = -1
         while ind<0:
             try:
-                ind = int(input(f"Choose a network to train or type 0 to go back: "))
+                ind = int(input("Choose a network to train or type 0 to go back: "))
                 if ind<0 or ind>len(self.networks):
                     raise ValueError
             except ValueError:
@@ -80,7 +80,7 @@ class NeuralNetworkApplication:
                 print("The learn rate must be a positive number!")
         if learn_rate==0:
             return
-        
+
         show_progress = bool(int(input("Would you like to display training progress? (1: show progress, 0: don't show progress) ")))
         print("Training...")
         self.networks[ind-1].train_network(epochs, self.batches, learn_rate, self.test_images, self.test_labels, show_progress)

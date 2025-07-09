@@ -1,7 +1,7 @@
+from pathlib import Path
 import struct
 import array
 import numpy as np
-from pathlib import Path
 
 def read_image_data(filepath: Path) -> tuple:
     """
