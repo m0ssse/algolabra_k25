@@ -74,7 +74,7 @@ class TestNetwork(unittest.TestCase):
         network = nw.Network(784, 128, 10)
         data_train = sample(list(zip(self.images_train, self.labels_train)), 128)
         batch = [data_train]
-        learn_rate = 3
+        learn_rate = 0.5 #We use a smaller learn rate to prevent oscillation.
         epochs = 10
         training_losses = network.train_network(epochs, batch, learn_rate, self.images_test, self.labels_test, False)
         self.assertGreater(training_losses[0], training_losses[-1])
@@ -109,7 +109,7 @@ class TestNetwork(unittest.TestCase):
         """
         Test that the network performs reasonably well after enough training
         """
-        network = nw.Network(784, 32, 10)
+        network = nw.Network(784, 64, 10)
         batches = loader.make_batches(self.images_train, self.labels_train, 32)
         epochs = 10
         learn_rate = 3
