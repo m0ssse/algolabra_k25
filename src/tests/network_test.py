@@ -60,7 +60,7 @@ class TestNetwork(unittest.TestCase):
         network = nw.Network(784, 128, 10)
         data_train = sample(list(zip(self.images_train, self.labels_train)), 128)
         batch = [data_train]
-        learn_rate = 3
+        learn_rate = 0.5
         epochs = 10
         training_losses = []
         for _ in range(epochs):
